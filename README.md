@@ -35,6 +35,7 @@ codebase I would use an ORM with managed migrations.
 
 - Node.js 22.5 or later (developed on 24.16.0)
 - npm
+- Angular CLI: `npm install -g @angular/cli`
 
 ### 1. Clone the repository
 
