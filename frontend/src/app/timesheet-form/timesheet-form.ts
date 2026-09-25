@@ -58,6 +58,7 @@ export class TimesheetForm implements OnInit {
           (t.entries ?? []).forEach((e, i) =>
             this.form.get(DAYS[i])!.setValue(e.hours)
           );
+          this.form.get('weekEndingDate')!.disable();
           if (this.isReadOnly) this.form.disable();
           this.recalcTotal();
         },
