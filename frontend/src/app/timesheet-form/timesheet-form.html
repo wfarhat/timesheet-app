@@ -1,0 +1,39 @@
+<h1>{{ id ? 'Timesheet' : 'New timesheet' }}</h1>
+
+@if (errorMessage()) { <p class="error">{{ errorMessage() }}</p> }
+@if (isReadOnly) { <p class="readonly-note"><strong>This timesheet is read-only.</strong></p> }
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div>
+    <label for="week">Week ending (Sunday)</label>
+    <input id="week" type="date" formControlName="weekEndingDate">
+    @if (form.get('weekEndingDate')?.invalid && form.get('weekEndingDate')?.touched) {
+      <span class="error">Week-ending date is required.</span>
+    }
+  </div>
+
+  @for (d of days; track d) {
+    <div>
+      <label [for]="d">{{ d }}</label>
+      <input [id]="d" type="number" step="0.25" min="0" max="24" [formControlName]="d">
+      @if (form.get(d)?.invalid && form.get(d)?.touched) {
+        <span class="error">Enter hours between 0 and 24.</span>
+      }
+    </div>
+  }
+
+  <div>
+    <label for="comment">Comment (optional)</label>
+    <textarea id="comment" formControlName="comment"></textarea>
+  </div>
+
+  <p class="total"><strong>Weekly total: {{ total() }} hours</strong></p>
+
+  <div class="actions">
+  @if (!isReadOnly) {
+    <button type="submit" [disabled]="saving()">Save draft</button>
+    <button type="button" (click)="submit()" [disabled]="saving()">Submit</button>
+  }
+  <button type="button" (click)="cancel()">Cancel</button>
+  </div>
+</form>

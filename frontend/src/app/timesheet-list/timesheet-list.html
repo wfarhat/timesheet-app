@@ -1,0 +1,30 @@
+<div class="user-bar">
+  <label for="contractor">Viewing as</label>
+  <select id="contractor" (change)="onContractorChange($event)">
+    @for (c of contractors(); track c.id) {
+      <option [value]="c.id" [selected]="c.id === currentUser.contractorId()">{{ c.fullName }}</option>
+    }
+  </select>
+</div>
+
+<h1>My Timesheets</h1>
+<a class="new-link" routerLink="/timesheets/new">New timesheet</a>
+@if (errorMessage()) { <p class="error">{{ errorMessage() }}</p> }
+@if (loading()) { <p>Loading...</p> }
+
+@if (!loading() && !errorMessage()) {
+  <table>
+    <tr><th>Week ending</th><th>Total hours</th><th>Status</th><th>Submitted</th><th></th></tr>
+    @for (t of timesheets(); track t.id) {
+      <tr>
+        <td>{{ t.weekEndingDate | date }}</td>
+        <td>{{ t.totalHours }}</td>
+        <td><span class="status status-{{ t.status }}">{{ t.status }}</span></td>
+        <td>{{ t.submittedAt ? (t.submittedAt | date) : '—' }}</td>
+        <td><a [routerLink]="['/timesheets', t.id]">Open</a></td>
+      </tr>
+    } @empty {
+      <tr><td colspan="5">No timesheets yet.</td></tr>
+    }
+  </table>
+}

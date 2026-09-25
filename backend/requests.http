@@ -1,0 +1,74 @@
+@url = http://localhost:3000/api
+
+### List
+GET {{url}}/timesheets
+X-Contractor-Id: 1
+
+### Detail
+GET {{url}}/timesheets/1
+X-Contractor-Id: 1
+
+### Not found
+GET {{url}}/timesheets/999
+X-Contractor-Id: 1
+
+### Create (valid)
+POST {{url}}/timesheets
+Content-Type: application/json
+X-Contractor-Id: 1
+
+{
+  "weekEndingDate": "2026-09-27",
+  "comment": "Test week",
+  "entries": [
+    { "workDate": "2026-09-21", "hours": 8 },
+    { "workDate": "2026-09-22", "hours": 8 },
+    { "workDate": "2026-09-23", "hours": 8 },
+    { "workDate": "2026-09-24", "hours": 8 },
+    { "workDate": "2026-09-25", "hours": 4 },
+    { "workDate": "2026-09-26", "hours": 0 },
+    { "workDate": "2026-09-27", "hours": 0 }
+  ]
+}
+
+### Duplicate - run the one above twice, expect 409
+
+### Negative hours - expect 400
+POST {{url}}/timesheets
+Content-Type: application/json
+X-Contractor-Id: 1
+
+{
+  "weekEndingDate": "2026-10-04",
+  "entries": [
+    { "workDate": "2026-09-28", "hours": -5 },
+    { "workDate": "2026-09-29", "hours": 8 },
+    { "workDate": "2026-09-30", "hours": 8 },
+    { "workDate": "2026-10-01", "hours": 8 },
+    { "workDate": "2026-10-02", "hours": 8 },
+    { "workDate": "2026-10-03", "hours": 0 },
+    { "workDate": "2026-10-04", "hours": 0 }
+  ]
+}
+
+### Submit
+POST {{url}}/timesheets/2/submit
+X-Contractor-Id: 1
+
+### Edit submitted - expect 409
+PUT {{url}}/timesheets/1
+Content-Type: application/json
+X-Contractor-Id: 1
+
+{
+  "weekEndingDate": "2026-09-13",
+  "entries": [
+    { "workDate": "2026-09-07", "hours": 8 },
+    { "workDate": "2026-09-08", "hours": 8 },
+    { "workDate": "2026-09-09", "hours": 8 },
+    { "workDate": "2026-09-10", "hours": 8 },
+    { "workDate": "2026-09-11", "hours": 8 },
+    { "workDate": "2026-09-12", "hours": 0 },
+    { "workDate": "2026-09-13", "hours": 0 }
+  ]
+}
