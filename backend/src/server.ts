@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import './db';
 import { listContractors, listTimesheets, getTimesheet, createTimesheet, submitTimesheet, updateTimesheet } from './services/timesheets';
-import { timesheetSchema, checkDates } from './validation';
+import { timesheetSchema, checkDates, isQuarterHour } from './validation';
 
 const app = express();
 app.set('etag', false);
@@ -46,6 +46,10 @@ app.post('/api/timesheets', (req, res) => {
 
   const dateError = checkDates(parsed.data.weekEndingDate, parsed.data.entries);
   if (dateError) return res.status(400).json({ message: dateError });
+  
+  if (!parsed.data.entries.every(e => isQuarterHour(e.hours))) {
+    return res.status(400).json({ message: 'Hours must be in quarter-hour steps.' });
+  }
 
   try {
     const id = createTimesheet(contractorId, parsed.data);
@@ -74,6 +78,10 @@ app.put('/api/timesheets/:id', (req, res) => {
   }
   const dateError = checkDates(parsed.data.weekEndingDate, parsed.data.entries);
   if (dateError) return res.status(400).json({ message: dateError });
+
+  if (!parsed.data.entries.every(e => isQuarterHour(e.hours))) {
+    return res.status(400).json({ message: 'Hours must be in quarter-hour steps.' });
+  }
 
   const result = updateTimesheet(contractorId, id, parsed.data);
   if (result.error === 'notfound') return res.status(404).json({ message: 'Timesheet not found.' });

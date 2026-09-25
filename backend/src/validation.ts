@@ -28,3 +28,5 @@ export function checkDates(weekEndingDate: string, entries: {workDate: string}[]
   }
   return null;
 }
+
+export const isQuarterHour = (h: number) => Number.isInteger(h * 4);
